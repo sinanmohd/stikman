@@ -1,0 +1,83 @@
+From 2e8ba886636c0d0e03761aa1772d27d242b5c0f2 Mon Sep 17 00:00:00 2001
+From: sinanmohd <pcmsinan@gmail.com>
+Date: Thu, 7 Jul 2022 23:36:34 +0530
+Subject: [PATCH] nout patch: -k NUM, where NUM is the number of stdout, 0 for
+ unlimited
+
+---
+ main.c    |  2 ++
+ nsxiv.h   |  1 +
+ options.c | 11 +++++++++--
+ 3 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/main.c b/main.c
+index a6c4187..1217f81 100644
+--- a/main.c
++++ b/main.c
+@@ -367,6 +367,8 @@ bool mark_image(int n, bool on)
+ 		markcnt += on ? 1 : -1;
+ 		if (mode == MODE_THUMB)
+ 			tns_mark(&tns, n, on);
++		if (options->to_stdout_count == markcnt)
++			cg_quit(0);
+ 		return true;
+ 	}
+ 	return false;
+diff --git a/nsxiv.h b/nsxiv.h
+index 7d81fff..f8187dd 100644
+--- a/nsxiv.h
++++ b/nsxiv.h
+@@ -228,6 +228,7 @@ struct opt {
+ 	char **filenames;
+ 	bool from_stdin;
+ 	bool to_stdout;
++	int to_stdout_count;
+ 	bool using_null;
+ 	bool recursive;
+ 	int filecnt;
+diff --git a/options.c b/options.c
+index 69b45b9..f26f0d0 100644
+--- a/options.c
++++ b/options.c
+@@ -30,7 +30,7 @@ const opt_t *options;
+ void print_usage(void)
+ {
+ 	printf("usage: nsxiv [-abcfhiopqrtvZ0] [-A FRAMERATE] [-e WID] [-G GAMMA] "
+-	       "[-g GEOMETRY] [-N NAME] [-n NUM] [-S DELAY] [-s MODE] "
++	       "[-g GEOMETRY] [-N NAME] [-n NUM]  [-S DELAY] [-s MODE] [-k NUM]"
+ 	       "[-z ZOOM] FILES...\n");
+ }
+ 
+@@ -65,6 +65,7 @@ void parse_options(int argc, char **argv)
+ 
+ 	_options.from_stdin = false;
+ 	_options.to_stdout = false;
++	_options.to_stdout_count = false;
+ 	_options.using_null = false;
+ 	_options.recursive = false;
+ 	_options.startnum = 0;
+@@ -87,7 +88,7 @@ void parse_options(int argc, char **argv)
+ 	_options.clean_cache = false;
+ 	_options.private_mode = false;
+ 
+-	while ((opt = getopt(argc, argv, "A:abce:fG:g:hin:N:opqrS:s:T:tvZz:0")) != -1) {
++	while ((opt = getopt(argc, argv, "A:abce:fG:g:hin:N:k:opqrS:s:T:tvZz:0")) != -1) {
+ 		switch (opt) {
+ 			case '?':
+ 				print_usage();
+@@ -143,6 +144,12 @@ void parse_options(int argc, char **argv)
+ 			case 'o':
+ 				_options.to_stdout = true;
+ 				break;
++                        case 'k' :
++				n = strtol(optarg, &end, 0);
++				if (*end != '\0' || n <= 0)
++					error(EXIT_FAILURE, 0, "Invalid argument for option -k: %s", optarg);
++				_options.to_stdout_count = atoi(optarg);
++                                break;
+ 			case 'p':
+ 				_options.private_mode = true;
+ 				break;
+-- 
+2.37.0
+
