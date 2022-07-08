@@ -1,0 +1,205 @@
+#! /bin/sh
+
+# https://gitlab.com/sinanmohd/stikman
+
+####################
+## User variables ##
+####################
+
+# dir where stickers are stored
+stick_path="${HOME}"/.local/share/sticker
+# resolution of stickers during creation
+stick_resolution=512 #p
+# path where stickers are temporarily stored during ouput
+output_path="${HOME}"/.cache/sticker
+# output format of stickers
+output_format=webp
+# output resolution of stickers
+output_resolution=480 #p
+# sleep time during output, increade this if you are stuck at the upload screen
+output_wait_time=.2
+# location where shared sticker packs are uploaded
+upload_locations="http://0x0.st
+                  https://bin.kernal.eu" # if you know more places like this make a pr :P
+                  # x0.at - offline
+
+image_picker=sxiv
+command -v nsxiv 1>/dev/null && image_picker=nsxiv
+
+print_help() {
+	while IFS= read -r Line; do
+		printf "%s\n" "$Line";
+	done <<EOF
+Usage: stikman [OPTION]
+
+stikman install <pack.zip>      install sticker pack
+stikman rm                      remove sticker pack
+stikman view                    view sticker pack
+stikman add     <image file>    add a new item to sticker pack 
+stikman share                   get a shareable link for sticker pack
+stikman rename                  rename a sticker pack
+stikman fetch   <link>          install pack from a link 
+stikman create  <directory>     make pack from images inside the directory
+stikman help                    print this menu
+
+EOF
+}
+
+get_stick_grp() {
+  find "$stick_path" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | dmenu -p "select sticker pack" -l 25
+}
+
+get_stick() {
+  stick_grp="$(get_stick_grp)"
+  if [ -z "$stick_grp" ]
+  then
+    notify-send "stikman" "stickers are not installed :( \nrun stikman help"
+    printf "stickers are not installed :( \nrun stikman help\n"
+    exit
+  fi
+
+  "$image_picker" -bfqrto -k 1 "$stick_path"/"$stick_grp" 2>/dev/null | tail -n 1
+}
+
+coom() {
+  convert "$1"  \
+  -strip \
+  -quality 70% \
+  -resize "$output_resolution" \
+  "$output_path"/sticker."$output_format"
+}
+
+to_webp() {
+  dep_ck "mogrify"
+  mogrify \
+  -strip \
+  -resize "$stick_resolution" \
+  -path "$1" \
+  -format webp ./"$2"/*.jpeg ./"$2"/*.jpg ./"$2"/*.png ./"$2"/*.heif ./"$2"/*.heic ./"$2"/*.avif > /dev/null 2>&1 
+}
+
+input_stick() {
+  printf "file://%s/sticker.%s" "$output_path" "$output_format" | xclip -selection clipboard -t text/uri-list
+  xdotool key a
+  xdotool key BackSpace
+  xdotool key ctrl+v
+  sleep "$output_wait_time" && xdotool key enter
+}
+
+dep_ck () {
+  for Dep; do
+    if ! command -v "$Dep" 1>/dev/null; then
+      printf "%s not found. Please install it.\n" "$Dep" >&2
+      command -v pacman 1>/dev/null && printf "run pacman -F %s to see which program they belong to\n" "$Dep"
+      exit
+    fi
+  done
+  unset Dep
+}
+
+get_pack_name() {
+  basename "$(find "$1" -maxdepth 1 -type d | sed 1d | tail -n 1)"
+}
+
+pack_install() {
+  [ -z "$1" ] && { print_help; exit; } 
+  dep_ck "unzip"
+  [ ! -d "$stick_path" ] && mkdir -p "$stick_path"
+
+  mkdir -p "$output_path"/installing
+  unzip -d "$output_path"/installing "$1" > /dev/null 2>&1
+
+  pack_name="$(get_pack_name "$output_path"/installing)"
+  if [ -z "$pack_name" ] || [ -n "${pack_name##*[!0-9]*}" ]
+  then
+    pack_name=${1%.zip}
+    mkdir "$stick_path"/"$pack_name"
+    mv "$output_path"/installing/* "$stick_path"/"$pack_name"
+  else
+    cp -r "$output_path"/installing/"$pack_name" "$stick_path" 
+  fi
+
+  to_webp "$stick_path"/"$pack_name" "$stick_path"/"$pack_name"
+  cd "$stick_path"/"$pack_name" || exit
+  rm ./*.jpeg ./*.jpg ./*.png ./*.heif ./*.heic ./*.avif > /dev/null 2>&1 
+  rm -r "$output_path"/installing
+}
+
+pack_remove() {
+  stick_grp="$(get_stick_grp)"
+  [ -n "$stick_grp" ] && rm -r "${stick_path:?}"/"$stick_grp" &&
+     printf "sticker pack %s was successfully removed\n" "$stick_grp"
+}
+
+get_upload_location() {
+  echo "$upload_locations" | shuf -n1 | tr -d ' '
+}
+
+pack_share() {
+  dep_ck "curl"
+  stick_grp="$(get_stick_grp)"
+  cd "$stick_path" || exit
+  zip -r "$output_path"/share.zip "$stick_grp" > /dev/null 2>&1
+  cd "$output_path" || exit
+  curl -F'file=@share.zip' "$(get_upload_location)" | tr -d '\n' | xclip -sel clip
+  rm share.zip 
+  notify-send "stikman" "output coppied to clipboard"
+}
+
+pack_fetch() {
+  [ -z "$1" ] && { print_help; exit; } 
+  dep_ck "curl"
+  curl -o "$output_path"/shared.zip "$1"
+  pack_install "$output_path"/shared.zip
+  rm "$output_path"/shared.zip
+}
+
+pack_view() {
+  stick_grp="$(get_stick_grp)"
+  "$image_picker" -bfrt "$stick_path"/"$stick_grp"
+}
+
+pack_rename() {
+  stick_grp="$(get_stick_grp)"
+  new_name="$(echo "" | dmenu -p "Enter new pack name")"
+  mv "$stick_path"/"$stick_grp" "$stick_path"/"$new_name"
+}
+
+pack_create() {
+  [ -z "$1" ] && { print_help; exit; } 
+  printf "converting files...\n"
+  mkdir -p "$stick_path"/"$1"
+  to_webp "$stick_path"/"$1" "$1"
+  cp "$1"/*.webp "$stick_path"/"$1" > /dev/null 2>&1
+}
+
+stick_add() {
+  [ -z "$1" ] && { print_help; exit; } 
+  stick_grp="$(get_stick_grp)"
+  convert -strip \
+          -resize "$stick_resolution" \
+          "$1" "$stick_path"/"$stick_grp"/"${1%.*}".webp
+}
+
+main() {
+  dep_ck "convert" "xdotool" "xclip" "$image_picker" "dmenu" 
+  [ ! -d "$output_path" ] && mkdir -p "$output_path"
+  # rm "$output_path"/sticker."$output_format"
+  stick_sel="$(get_stick)"
+  coom "$stick_sel"
+  input_stick
+}
+
+case "$1" in
+  "") main ;;
+  install) pack_install "$2" ;;
+  rm) pack_remove ;;
+  view) pack_view ;;
+  rename) pack_rename ;;
+  add) stick_add "$2";;
+  share) pack_share ;;
+  fetch) pack_fetch "$2" ;;
+  create) pack_create "$2" ;;
+  help) print_help ;;
+  *) print_help;;
+esac
