@@ -1,9 +1,9 @@
 ![stikman](stikman.png)
 
-stikman is a cross platform sticker solution for the desktop using sxiv and dmenu. tested on element and telegram, should also work on other platforms
+stikman brings platform independent stickers for the desktop
 
 
-## Showcase
+## Showcase (using telegram and element/matrix)
 ![stikman.gif](stikman.gif)
 
 ## Notes
