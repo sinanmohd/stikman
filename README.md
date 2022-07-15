@@ -8,11 +8,11 @@ stikman brings platform independent stickers for the desktop
 
 ## Notes
 
-apply [this](https://gitlab.com/sinanmohd/stikman/-/blob/master/nout-sxiv.patch) patch to sxiv or use the patched version [here](https:/gitlab.com/sinanmohd/nsxiv) for a more seamless experience, it'll automatically quit sxiv after sticker selection
+apply [this](https://gitlab.com/sinanmohd/stikman/-/blob/master/nout-sxiv.patch) patch to sxiv or use the patched version [here](https://gitlab.com/sinanmohd/nsxiv) for a more seamless experience, it'll automatically quit sxiv after sticker selection
 
 ## Usage
 
-* launch stikman using a key binding daemon like [sxhkd](https://wiki.archlinux.org/title/Sxhkd) and select a sticker using `m`. additionally quit using `q` if you didint apply the [nout sxiv patch](https://gitlab.com/sinanmohd/stikman/-/blob/master/nout-sxiv.patch)
+* launch stikman using a key binding daemon like [sxhkd](https://wiki.archlinux.org/title/Sxhkd) and select a sticker using `m` or right click. additionally quit using `q` if you didint apply the [nout sxiv patch](https://gitlab.com/sinanmohd/stikman/-/blob/master/nout-sxiv.patch)
 
 ```
 stikman install <pack.zip>      install sticker pack
