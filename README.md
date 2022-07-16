@@ -6,9 +6,19 @@ stikman brings platform independent stickers for the desktop
 ## Showcase (using telegram and element/matrix)
 ![stikman.gif](stikman.gif)
 
+## Why
+Generally you can only use a given set of stickers within the app they were made for. This is an attempt to make it easy to use the same sticker set across multiple chat apps. one of the other reason i created stikman was lack of proper support for stickers in chat platforms like element/matrix, its a lot of work and you need a self hosted server, stikman makes it easy. now that matrix basically have bridges for every other chat platform  when i asked whats holding people back from switching to it in couple of rooms all of them basically said this, stikman comes with all the features you would expect from it sticker sharing, creation etc... .now its one less thing to worry about when choosing your preferred chat program
+
 ## Notes
 
 apply [this](https://gitlab.com/sinanmohd/stikman/-/blob/master/nout-sxiv.patch) patch to sxiv or use the patched version [here](https://gitlab.com/sinanmohd/nsxiv) for a more seamless experience, it'll automatically quit sxiv after sticker selection
+
+## Installation
+```
+git clone https://gitlab/sinanmohd/stikman
+cd stikman
+sudo make install
+```
 
 ## Usage
 
