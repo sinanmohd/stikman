@@ -19,9 +19,14 @@ output_resolution=480 #p
 # sleep time during output, increade this if you are stuck at the upload screen
 output_wait_time=.2
 # location where shared sticker packs are uploaded
-upload_locations="http://0x0.st
-                  https://bin.kernal.eu" # if you know more places like this make a pr :P
-                  # x0.at - offline
+upload_locations="https://0.vern.cc
+                  https://0x0.st
+                  https://bin.kernal.eu
+                  https://bin.sinanmohd.com
+                  https://envs.sh
+                  https://null.slipfox.xyz
+                  https://ttm.sh
+                  https://x0.at"
 
 image_picker=sxiv
 command -v nsxiv 1>/dev/null && image_picker=nsxiv
