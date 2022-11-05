@@ -7,7 +7,7 @@ stikman brings platform independent stickers for the desktop
 ![stikman.gif](stikman.gif)
 
 ## Why
-Generally you can only use a given set of stickers within the app they were made for. This is an attempt to make it easy to use the same sticker set across multiple chat apps. one of the other reason i created stikman was lack of proper support for stickers in chat platforms like element/matrix, its a lot of work and you need a self hosted server, stikman makes it easy. now that matrix basically have bridges for every other chat platform  when i asked whats holding people back from switching to it in couple of rooms all of them basically said this, stikman comes with all the features you would expect from it sticker sharing, creation etc... .now its one less thing to worry about when choosing your preferred chat program
+Generally you can only use a given set of stickers within the chat program they were made for. stikman make it easy to use the same sticker set across multiple chat programs. there is also lack of proper support for stickers in chat platforms like element/matrix, its a lot of work and you need a self hosted server, stikman makes it easy. now that matrix basically have bridges for every other chat platform  when i asked whats holding people back from switching to it in couple of rooms most of them said this, stikman comes with all the features you would expect from it sticker sharing, creation etc... .now its one less thing to worry about when choosing your preferred chat program
 
 ## Notes
 
