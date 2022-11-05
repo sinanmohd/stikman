@@ -1,9 +1,9 @@
-#! /bin/sh
+#!/bin/sh
 
 # https://gitlab.com/sinanmohd/stikman
 
 ####################
-## User variables ##
+## user variables ##
 ####################
 
 # dir where stickers are stored
