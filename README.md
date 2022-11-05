@@ -15,7 +15,7 @@ apply [this](https://gitlab.com/sinanmohd/stikman/-/blob/master/nout-sxiv.patch)
 
 ## Installation
 ```
-git clone https://gitlab/sinanmohd/stikman
+git clone https://gitlab.com/sinanmohd/stikman
 cd stikman
 sudo make install
 ```
